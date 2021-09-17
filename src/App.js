@@ -1,25 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useEffect, useRef} from 'react';
+import { Grid } from '@material-ui/core';
+import { PushToTalkButton, PushToTalkButtonContainer, ErrorPanel } from '@speechly/react-ui';
+import { SpeechState, useSpeechContext } from '@speechly/react-client';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Main from './components/Main/Main';
+import Cards from './components/Cards/Cards';
+import useStyles from './style';
+
+const App = () => {
+    const classes = useStyles();
+    const {speechState} = useSpeechContext();
+    const main = useRef(null);
+
+    const executeScroll = () => main.current.scrollIntoView();
+    useEffect(() => {
+       if(speechState === SpeechState.Recording){
+           executeScroll();
+       }
+    }, [speechState])
+    return (
+        <div>
+            <Grid className={classes.grid} container spacing={0} alignItems="center" justify="center" style={{ height: "100vh" }}>
+                <Grid item xs={12} sm={3} className={classes.mobile}>
+                    <Cards title="Income"/>
+                </Grid>
+                <Grid ref={main} item xs={12} sm={4} className={classes.main}>
+                   <Main/>
+                </Grid>
+                <Grid item xs={12} sm={3} className={classes.desktop}>
+                    <Cards title="Income"/>
+                </Grid>
+                <Grid item xs={12} sm={3} className={classes.last}>
+                    <Cards title="Expense"/>
+                </Grid>
+            </Grid>
+            <PushToTalkButtonContainer size='4rem'>
+                <PushToTalkButton style = {{ size : "4rem"}}/>
+                <ErrorPanel/>
+            </PushToTalkButtonContainer>
+        </div>
+    )
 }
 
 export default App;
